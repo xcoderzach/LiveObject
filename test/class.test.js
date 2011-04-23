@@ -34,27 +34,35 @@ ClassTest.prototype.testPropertyScopes = function() {
   assertEquals("privateMethod not public", typeof classyInstance._privateMethod, "undefined")
 }
 
-
-ClassTest.prototype.testMonkeyRun = function() {
-
-  classyInstance.monkeyRun(function(self) {
+function monkeyTest(self) {
     assertEquals("Monkeys needs private methods!", self.privateMethod(), 20)
     assertEquals("Monkeys needs private variables!", self.privateVariable, 10)
 
     assertEquals("Monkeys needs public methods!", self.publicMethod(), 20)
     assertEquals("Monkeys needs public variables!", self.publicVariable, 10)
-  })
+  }
+
+ClassTest.prototype.testMonkeyRun = function() {
+  classyInstance.monkeyRun(monkeyTest)
 } 
 
 ClassTest.prototype.testInstanceMonkeyPatch = function() {
-
-  classyInstance.instanceMonkeyPatch("w00t", function(self) {
-    assertEquals("Monkeys needs private methods!", self.privateMethod(), 20)
-    assertEquals("Monkeys needs private variables!", self.privateVariable, 10)
-
-    assertEquals("Monkeys needs public methods!", self.publicMethod(), 20)
-    assertEquals("Monkeys needs public variables!", self.publicVariable, 10)
-  })
+  var anotherInstance = new Classy()
+  classyInstance.monkeyPatch("w00t", monkeyTest)
 
   classyInstance.w00t()
+
+  assertEquals("Monkey patch leaking to other instances!!!!!", typeof anotherInstance.w00t, "undefined")
 }  
+
+ClassTest.prototype.testClassMonkeyPatch = function() {
+  var anEarlyInstance = new Classy()
+  Classy.monkeyPatch("w00t", monkeyTest)
+
+  classyInstance.w00t()
+
+  var aLateInstance = new Classy()
+
+  aLateInstance.w00t()
+  anEarlyInstance.w00t()
+} 
