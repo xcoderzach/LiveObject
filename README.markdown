@@ -1,0 +1,1 @@
+Class system for javascript
