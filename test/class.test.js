@@ -10,7 +10,7 @@ Classy.prototype.publicMethod = function(self) {
 }
 
 Classy.prototype._privateMethod = function(self) {
-  return self.privateVariable + self.publicVariable
+  return self.privateVariable + this.publicVariable
 }
 
 Classy.prototype._privateVariable = 10
@@ -25,6 +25,7 @@ ClassTest.prototype.testPropertyScopes = function() {
 
   assertEquals("privateMethod not private", typeof classyInstance.privateMethod, "undefined")
   assertEquals("privateMethod not private", typeof classyInstance._privateMethod, "undefined")
+
   assertEquals("privateVariable not private", typeof classyInstance.privateVariable, "undefined")
   assertEquals("privateVariable not private", typeof classyInstance._privateVariable, "undefined")
 
@@ -38,8 +39,8 @@ function monkeyTest(self) {
     assertEquals("Monkeys needs private methods!", self.privateMethod(), 20)
     assertEquals("Monkeys needs private variables!", self.privateVariable, 10)
 
-    assertEquals("Monkeys needs public methods!", self.publicMethod(), 20)
-    assertEquals("Monkeys needs public variables!", self.publicVariable, 10)
+    assertEquals("Monkeys needs public methods!", this.publicMethod(), 20)
+    assertEquals("Monkeys needs public variables!", this.publicVariable, 10)
   }
 
 ClassTest.prototype.testMonkeyRun = function() {
@@ -66,3 +67,23 @@ ClassTest.prototype.testClassMonkeyPatch = function() {
   aLateInstance.w00t()
   anEarlyInstance.w00t()
 } 
+
+ClassTest.prototype.testOverriding = function() {
+  var NewClassy = function(self) {
+
+  }
+  NewClassy.prototype.publicVariable = 10
+  NewClassy.prototype.mutateVariable = function(self) {
+    this.publicVariable = 20
+  }
+  NewClassy = Constructor(NewClassy)
+
+  var class1 = NewClassy()
+  var class2 = NewClassy()
+
+  class1.mutateVariable()
+
+  assertEquals("Not mutated!", class1.publicVariable, 20)
+  assertEquals("Mutated when it should not have been!", class1.publicVariable, 10)
+}  
+ 
