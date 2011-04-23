@@ -45,3 +45,16 @@ ClassTest.prototype.testMonkeyRun = function() {
     assertEquals("Monkeys needs public variables!", self.publicVariable, 10)
   })
 } 
+
+ClassTest.prototype.testInstanceMonkeyPatch = function() {
+
+  classyInstance.instanceMonkeyPatch("w00t", function(self) {
+    assertEquals("Monkeys needs private methods!", self.privateMethod(), 20)
+    assertEquals("Monkeys needs private variables!", self.privateVariable, 10)
+
+    assertEquals("Monkeys needs public methods!", self.publicMethod(), 20)
+    assertEquals("Monkeys needs public variables!", self.publicVariable, 10)
+  })
+
+  classyInstance.w00t()
+}  

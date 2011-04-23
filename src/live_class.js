@@ -21,6 +21,12 @@ function Constructor(klass) {
     fn.apply(publicProperties, [privateProperties].concat([].slice.call(arguments)))
   }
 
+  publicProperties.instanceMonkeyPatch = function(name, fn) {
+    publicProperties[name] = function() {
+      fn.apply(publicProperties, [privateProperties].concat([].slice.call(arguments)))
+    }
+  }
+
   return function() {
     var context = klass.apply(publicProperties, [privateProperties].concat([].slice.call(arguments)))
     return typeof context === "object" 
